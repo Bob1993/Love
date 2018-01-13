@@ -17,14 +17,14 @@ $(function () {
 
 	/* start the animation */
 	setTimeout(function () {
-		startButterflyAnimation();
-	}, 60000);
+		startHeartAnimation();
+	}, 30000);
 
 	/* start the counter */
 
 	var together = new Date();
-	together.setFullYear(2012, 5, 22);
-	together.setHours(20);
+	together.setFullYear(2017, 9, 7);
+	together.setHours(19);
 	together.setMinutes(0);
 	together.setSeconds(0);
 	together.setMilliseconds(0);
@@ -43,8 +43,8 @@ $(function () {
     gardenCtx.globalCompositeOperation = "lighter"; // rendering mode
     garden = new Garden(gardenCtx, gardenCanvas);
 
-	offsetX = $animation.width() / 2 + 20;
-	offsetY = $animation.height() / 2 + 10;
+	offsetX = $animation.width() / 2;
+	offsetY = $animation.height() / 2 -55;
 	
 	$("#content").css("width", $animation.width() + $("#code").width());
 	$("#content").css("height", Math.max($animation.height(), $("#code").height()));
@@ -65,6 +65,41 @@ $(window).resize(function() {
         location.replace(location);
     }
 });
+
+function getHeartPoint(angle) {
+	var t = angle / Math.PI;
+	var x = 19.5 * (16 * Math.pow(Math.sin(t), 3));
+	var y = - 20 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+	return new Array(offsetX + x, offsetY + y);
+}
+
+function startHeartAnimation() {
+	var interval = 120;
+	var angle = 10;
+	var heart = new Array();
+	var animationTimer = setInterval(function () {
+		var bloom = getHeartPoint(angle);
+		var draw = true;
+		for (var i = 0; i < heart.length; i++) {
+			var p = heart[i];
+			var distance = Math.sqrt(Math.pow(p[0] - bloom[0], 2) + Math.pow(p[1] - bloom[1], 2));
+			if (distance < Garden.options.bloomRadius.max * 1.3) {
+				draw = false;
+				break;
+			}
+		}
+		if (draw) {
+			heart.push(bloom);
+			garden.createRandomBloom(bloom[0], bloom[1]);
+		}
+		if (angle >= 30) {
+			clearInterval(animationTimer);
+			showMessages();
+		} else {
+			angle += 0.2;
+		}
+	}, interval);
+}
 
 function getButterflyPoint(angle) {
 	var t = angle / Math.PI;
@@ -159,7 +194,7 @@ function showMessages() {
 
 function adjustWordsPosition() {
 	$('#words').css("position", "absolute");
-	$('#words').css("top", $("#garden").position().top + 270);
+	$('#words').css("top", $("#garden").position().top + 230);
 	$('#words').css("left", $("#garden").position().left + 120);
 }
 
